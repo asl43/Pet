@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetCare - Cuidados para Animais</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 414px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 30px rgba(0,0,0,0.3);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .header .subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 20px;
+            padding-bottom: 80px;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 1px solid #f0f0f0;
+        }
+
+        .status-card {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+        }
+
+        .emergency-card {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+            color: white;
+        }
+
+        .warning-card {
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+            color: white;
+        }
+
+        /* Pet Card */
+        .pet-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            position: relative; /* Adicionado para o botão de remover */
+        }
+
+        .pet-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            overflow: hidden; /* Para garantir que a imagem não vaze */
+        }
+
+        .pet-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Para cobrir o espaço sem distorcer */
+        }
+
+        .pet-info h3 {
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+
+        .pet-info p {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+        
+        /* Botão de remover pet */
+        .remove-pet-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+
+        /* Buttons */
+        .btn {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-emergency {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+            font-size: 18px;
+            font-weight: bold;
+            padding: 15px;
+        }
+
+        .btn-emergency:hover {
+            box-shadow: 0 6px 20px rgba(244, 67, 54, 0.3);
+        }
+        
+        .btn-google {
+            background-color: #4285F4;
+            color: white;
+        }
+
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        /* Social Feed */
+        .post {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .post-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            overflow: hidden;
+        }
+
+        .post-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .post-content {
+            margin-bottom: 10px;
+        }
+
+        .post-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .post-action {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .post-action:hover {
+            color: #4CAF50;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 414px;
+            background: white;
+            display: flex;
+            border-top: 1px solid #ddd;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
+            z-index: 999;
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: none;
+            border: none;
+            color: #666;
+        }
+
+        .nav-item.active {
+            color: #4CAF50;
+            background: rgba(76, 175, 80, 0.1);
+        }
+
+        .nav-item span {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        .nav-item .nav-label {
+            font-size: 12px;
+        }
+
+        /* Emergency Contact */
+        .emergency-contact {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .emergency-contact .info {
+            flex: 1;
+        }
+
+        .emergency-contact .info h4 {
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .emergency-contact .info p {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .emergency-contact .call-btn {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        /* Article Card */
+        .article-card {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .article-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .article-image {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .article-content h4 {
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .article-content p {
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 350px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .modal-content h3 {
+            margin-bottom: 15px;
+            color: #f44336;
+        }
+
+        .modal-content p {
+            margin-bottom: 20px;
+            color: #666;
+        }
+
+        /* Responsive */
+        @media (max-width: 414px) {
+            .container {
+                border-radius: 0;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card, .post, .article-card {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        /* Search */
+        .search-bar {
+            background: white;
+            border-radius: 25px;
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-bar input {
+            border: none;
+            outline: none;
+            flex: 1;
+            font-size: 16px;
+        }
+
+        .calculator {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .calc-result {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        /* Notificações */
+        .notification-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1001;
+            width: 90%;
+            max-width: 350px;
+            text-align: center;
+            transition: all 0.5s ease;
+        }
+        
+        .notification-container.hidden {
+            opacity: 0;
+            transform: translateX(-50%) translateY(-50px);
+        }
+
+        .notification {
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            color: white;
+            font-weight: bold;
+        }
+        
+        .notification.success {
+            background-color: #4CAF50;
+        }
+        
+        .notification.info {
+            background-color: #2196F3;
+        }
+        
+        .notification.error {
+            background-color: #f44336;
+        }
+        
+        .auth-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .auth-buttons .btn {
+            width: auto;
+            padding: 10px 20px;
+        }
+
+        /* Adicionado para o preview da imagem */
+        #avatar-preview {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #eee;
+            margin: 10px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 2px dashed #ccc;
+        }
+
+        #avatar-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>PetCare</h1>
+            <p class="subtitle">Cuidando dos seus amigos com amor</p>
+        </div>
+
+        <div class="content screen active" id="home">
+            <div id="auth-status-container">
+                </div>
+            
+            <div id="logged-in-content">
+                <div class="card status-card">
+                    <h3>Status dos Pets</h3>
+                    <p>Todos os seus pets estão saudáveis! 🐾</p>
+                </div>
+
+                <div class="card warning-card">
+                    <h3>Próximas Vacinas</h3>
+                    <p id="vaccine-reminder">Nenhum lembrete de vacina no momento.</p>
+                </div>
+
+                <button class="btn btn-emergency" onclick="showEmergency()">
+                    🚨 EMERGÊNCIA SOS
+                </button>
+
+                <div class="card">
+                    <h3>Seus Pets</h3>
+                    <div id="pet-list-home">
+                        </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content screen" id="pets">
+            <button class="btn" onclick="showPetForm()">+ Adicionar Pet</button>
+            <div id="pet-list-full">
+                </div>
+        </div>
+
+        <div class="content screen" id="social">
+            <div class="search-bar">
+                <span>🔍</span>
+                <input type="text" placeholder="Buscar posts...">
+            </div>
+
+            <div class="post">
+                <div class="post-header">
+                    <div class="post-avatar">🐕</div>
+                    <div>
+                        <strong>Maria Silva</strong>
+                        <p style="font-size: 12px; color: #666;">2 horas atrás</p>
+                    </div>
+                </div>
+                <div class="post-content">
+                    <p>Max adorou o novo brinquedo! 🎾</p>
+                </div>
+                <div class="post-image">📷 Foto do Max brincando</div>
+                <div class="post-actions">
+                    <button class="post-action" onclick="likePost(this)">
+                        <span>❤️</span> <span>12</span>
+                    </button>
+                    <button class="post-action">
+                        <span>💬</span> <span>3</span>
+                    </button>
+                    <button class="post-action">
+                        <span>📤</span> Compartilhar
+                    </button>
+                </div>
+            </div>
+
+            <div class="post">
+                <div class="post-header">
+                    <div class="post-avatar">🐱</div>
+                    <div>
+                        <strong>João Santos</strong>
+                        <p style="font-size: 12px; color: #666;">5 horas atrás</p>
+                    </div>
+                </div>
+                <div class="post-content">
+                    <p>Dica: Sempre deixe água fresca disponível para seus gatos! 💧</p>
+                </div>
+                <div class="post-actions">
+                    <button class="post-action" onclick="likePost(this)">
+                        <span>❤️</span> <span>25</span>
+                    </button>
+                    <button class="post-action">
+                        <span>💬</span> <span>8</span>
+                    </button>
+                    <button class="post-action">
+                        <span>📤</span> Compartilhar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="content screen" id="emergency">
+            <div class="card emergency-card">
+                <h3>🚨 Emergência Ativada</h3>
+                <p>Encontre ajuda veterinária imediata</p>
+            </div>
+
+            <h3 style="margin-bottom: 15px;">Veterinários 24h Próximos</h3>
+            
+            <div class="emergency-contact">
+                <div class="info">
+                    <h4>Clínica VetCare 24h</h4>
+                    <p>📍 Rua das Flores, 123 - 1.2km</p>
+                    <p>⭐ 4.8 • Aberto agora</p>
+                </div>
+                <button class="call-btn" onclick="callVet('11999999999')">
+                    📞 Ligar
+                </button>
+            </div>
+
+            <div class="emergency-contact">
+                <div class="info">
+                    <h4>Hospital Animal Plus</h4>
+                    <p>📍 Av. Principal, 456 - 2.1km</p>
+                    <p>⭐ 4.6 • Aberto agora</p>
+                </div>
+                <button class="call-btn" onclick="callVet('11888888888')">
+                    📞 Ligar
+                </button>
+            </div>
+
+            <div class="card">
+                <h3>Primeiros Socorros</h3>
+                <button class="btn" onclick="showFirstAid('choking')">Engasgo</button>
+                <button class="btn" onclick="showFirstAid('poisoning')">Envenenamento</button>
+                <button class="btn" onclick="showFirstAid('wounds')">Ferimentos</button>
+                <button class="btn" onclick="showFirstAid('seizures')">Convulsões</button>
+            </div>
+        </div>
+
+        <div class="content screen" id="education">
+            <div class="search-bar">
+                <span>🔍</span>
+                <input type="text" placeholder="Buscar conteúdo...">
+            </div>
+
+            <h3 style="margin-bottom: 15px;">Calculadoras Úteis</h3>
+            
+            <div class="calculator">
+                <h4>Calculadora de Ração</h4>
+                <div class="form-group">
+                    <label>Peso do pet (kg):</label>
+                    <input type="number" id="petWeight" placeholder="5.5">
+                </div>
+                <div class="form-group">
+                    <label>Idade:</label>
+                    <select id="petAge">
+                        <option value="puppy">Filhote (até 1 ano)</option>
+                        <option value="adult">Adulto (1-7 anos)</option>
+                        <option value="senior">Idoso (7+ anos)</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="calculateFood()">Calcular</button>
+                <div id="foodResult" class="calc-result" style="display: none;"></div>
+            </div>
+
+            <h3 style="margin-bottom: 15px;">Artigos Recentes</h3>
+
+            <div class="article-card" onclick="showArticle('nutrition')">
+                <div class="article-image">🍽️</div>
+                <div class="article-content">
+                    <h4>Nutrição Balanceada para Cães</h4>
+                    <p>Aprenda sobre os nutrientes essenciais</p>
+                </div>
+            </div>
+
+            <div class="article-card" onclick="showArticle('training')">
+                <div class="article-image">🎯</div>
+                <div class="article-content">
+                    <h4>Treinamento Básico para Filhotes</h4>
+                    <p>Dicas para educar seu novo amigo</p>
+                </div>
+            </div>
+
+            <div class="article-card" onclick="showArticle('health')">
+                <div class="article-image">🏥</div>
+                <div class="article-content">
+                    <h4>Sinais de Alerta na Saúde</h4>
+                    <p>Quando procurar um veterinário</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-nav">
+            <button class="nav-item active" onclick="showScreen('home', this)">
+                <span>🏠</span>
+                <span class="nav-label">Home</span>
+            </button>
+            <button class="nav-item" onclick="showScreen('pets', this)">
+                <span>🐾</span>
+                <span class="nav-label">Pets</span>
+            </button>
+            <button class="nav-item" onclick="showScreen('social', this)">
+                <span>👥</span>
+                <span class="nav-label">Social</span>
+            </button>
+            <button class="nav-item" onclick="showScreen('emergency', this)">
+                <span>🚨</span>
+                <span class="nav-label">SOS</span>
+            </button>
+            <button class="nav-item" onclick="showScreen('education', this)">
+                <span>📚</span>
+                <span class="nav-label">Aprenda</span>
+            </button>
+        </div>
+
+        <div class="modal" id="emergencyModal">
+            <div class="modal-content">
+                <h3>🚨 Emergência Ativada</h3>
+                <p>Você ativou o modo de emergência. Procure ajuda veterinária imediatamente!</p>
+                <button class="btn btn-emergency" onclick="hideEmergency()">Entendi</button>
+            </div>
+        </div>
+
+        <div class="modal" id="petFormModal">
+            <div class="modal-content">
+                <h3>Adicionar Novo Pet</h3>
+                <div class="form-group">
+                    <label>Nome:</label>
+                    <input type="text" id="newPetName" placeholder="Nome do pet">
+                </div>
+                <div class="form-group">
+                    <label>Espécie:</label>
+                    <input type="text" id="newPetSpecies" placeholder="Ex: Cão, Gato">
+                </div>
+                <div class="form-group">
+                    <label>Raça:</label>
+                    <input type="text" id="newPetBreed" placeholder="Ex: Golden Retriever">
+                </div>
+                <div class="form-group">
+                    <label>Avatar (Emoji ou Imagem):</label>
+                    <input type="file" id="newPetAvatarFile" accept="image/*" onchange="previewAvatar(event)">
+                    <p style="font-size: 12px; color: #777; margin-top: 5px;">Ou digite um emoji no campo abaixo, se preferir.</p>
+                    <input type="text" id="newPetAvatarEmoji" placeholder="Ex: 🐕, 🐱">
+                    <div id="avatar-preview">
+                        </div>
+                </div>
+                <button class="btn" onclick="addPet()">Salvar Pet</button>
+                <button class="btn" style="background: #ccc;" onclick="hidePetForm()">Cancelar</button>
+            </div>
+        </div>
+        
+        <div class="modal" id="loginModal">
+            <div class="modal-content">
+                <h3>Entrar</h3>
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" id="loginEmail" placeholder="seu-email@exemplo.com">
+                </div>
+                <div class="form-group">
+                    <label>Senha:</label>
+                    <input type="password" id="loginPassword" placeholder="Sua senha">
+                </div>
+                <button class="btn" onclick="handleLogin()">Entrar</button>
+                <button class="btn btn-google">Entrar com Google</button>
+                <p style="margin-top: 15px;">Não tem uma conta? <a href="#" onclick="showSignup()">Criar conta</a></p>
+            </div>
+        </div>
+
+        <div class="modal" id="signupModal">
+            <div class="modal-content">
+                <h3>Criar Conta</h3>
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" id="signupEmail" placeholder="seu-email@exemplo.com">
+                </div>
+                <div class="form-group">
+                    <label>Senha:</label>
+                    <input type="password" id="signupPassword" placeholder="Crie uma senha">
+                </div>
+                <button class="btn" onclick="handleSignup()">Criar Conta</button>
+                <p style="margin-top: 15px;">Já tem uma conta? <a href="#" onclick="showLogin()">Entrar</a></p>
+            </div>
+        </div>
+
+        <div class="notification-container hidden" id="notification-container">
+            </div>
+
+    </div>
+
+    <script>
+        // Variável de estado global
+        let state = {
+            isLoggedIn: false,
+            userEmail: '',
+            pets: JSON.parse(localStorage.getItem('pets')) || [
+                { id: 'max', name: 'Max', species: 'Cão', breed: 'Golden Retriever', avatar: '🐕', birthDate: '2021-03-15' },
+                { id: 'luna', name: 'Luna', species: 'Gato', breed: 'Persa', avatar: '🐱', birthDate: '2022-07-22' }
+            ]
+        };
+        
+        // Função para salvar o estado no localStorage
+        function saveState() {
+            localStorage.setItem('pets', JSON.stringify(state.pets));
+            localStorage.setItem('isLoggedIn', state.isLoggedIn);
+            localStorage.setItem('userEmail', state.userEmail);
+        }
+
+        // Funções de Autenticação
+        function showLogin() {
+            document.getElementById('signupModal').classList.remove('active');
+            document.getElementById('loginModal').classList.add('active');
+        }
+
+        function showSignup() {
+            document.getElementById('loginModal').classList.remove('active');
+            document.getElementById('signupModal').classList.add('active');
+        }
+
+        function handleLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            // Simulação de autenticação
+            if (email && password) { // Adicione sua lógica de verificação de credenciais aqui
+                state.isLoggedIn = true;
+                state.userEmail = email;
+                saveState();
+                renderAuthStatus();
+                document.getElementById('loginModal').classList.remove('active');
+                showNotification('Login realizado com sucesso! Bem-vindo(a)!', 'success');
+                showScreen('home', document.querySelector('.nav-item.active'));
+            } else {
+                showNotification('Email ou senha inválidos.', 'error');
+            }
+        }
+        
+        function handleSignup() {
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            
+            // Simulação de cadastro
+            if (email && password) { // Adicione sua lógica de cadastro aqui
+                state.isLoggedIn = true;
+                state.userEmail = email;
+                saveState();
+                renderAuthStatus();
+                document.getElementById('signupModal').classList.remove('active');
+                showNotification('Conta criada com sucesso! Bem-vindo(a)!', 'success');
+                showScreen('home', document.querySelector('.nav-item.active'));
+            } else {
+                showNotification('Por favor, preencha todos os campos.', 'error');
+            }
+        }
+
+        function handleLogout() {
+            state.isLoggedIn = false;
+            state.userEmail = '';
+            saveState();
+            renderAuthStatus();
+            showNotification('Você saiu da sua conta.', 'info');
+            showScreen('home', document.querySelector('.nav-item.active'));
+        }
+
+        function renderAuthStatus() {
+            const container = document.getElementById('auth-status-container');
+            const loggedInContent = document.getElementById('logged-in-content');
+            
+            if (state.isLoggedIn) {
+                container.innerHTML = `
+                    <div class="card status-card" style="background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);">
+                        <p>Olá, ${state.userEmail.split('@')[0]}! <button class="btn" style="background: none; border: 1px solid white; margin-top: 10px; padding: 5px 10px; width: auto;" onclick="handleLogout()">Sair</button></p>
+                    </div>
+                `;
+                loggedInContent.style.display = 'block';
+            } else {
+                container.innerHTML = `
+                    <div class="card warning-card" style="background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%); text-align: center;">
+                        <h3>Sua Conta</h3>
+                        <p>Para salvar seus pets e usar todos os recursos, faça login.</p>
+                        <div class="auth-buttons">
+                            <button class="btn" onclick="showLogin()">Entrar</button>
+                            <button class="btn" style="background: #ddd; color: #333;" onclick="showSignup()">Criar Conta</button>
+                        </div>
+                    </div>
+                `;
+                loggedInContent.style.display = 'none';
+            }
+        }
+        
+        // Funções de Notificação
+        function showNotification(message, type = 'info') {
+            const container = document.getElementById('notification-container');
+            container.innerHTML = `<div class="notification ${type}">${message}</div>`;
+            container.classList.remove('hidden');
+
+            setTimeout(() => {
+                container.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Funções de Gerenciamento de Pets
+        function renderPets() {
+            const petListHome = document.getElementById('pet-list-home');
+            const petListFull = document.getElementById('pet-list-full');
+
+            // Limpa as listas
+            petListHome.innerHTML = '';
+            petListFull.innerHTML = '';
+
+            state.pets.forEach(pet => {
+                // Cria o HTML para o avatar (emoji ou imagem)
+                const avatarContent = pet.avatar.startsWith('data:image') ? `<img src="${pet.avatar}" alt="Avatar do ${pet.name}">` : pet.avatar;
+
+                // Para a tela Home
+                const petCardHome = document.createElement('div');
+                petCardHome.className = 'pet-card';
+                petCardHome.innerHTML = `
+                    <div class="pet-avatar">${avatarContent}</div>
+                    <div class="pet-info">
+                        <h3>${pet.name}</h3>
+                        <p>${pet.species} • ${pet.breed}</p>
+                    </div>
+                `;
+                petListHome.appendChild(petCardHome);
+
+                // Para a tela Pets
+                const petCardFull = document.createElement('div');
+                petCardFull.className = 'card';
+                petCardFull.innerHTML = `
+                    <div class="pet-card">
+                        <div class="pet-avatar">${avatarContent}</div>
+                        <div class="pet-info">
+                            <h3>${pet.name}</h3>
+                            <p>${pet.species} • ${pet.breed}</p>
+                        </div>
+                        <button class="remove-pet-btn" onclick="removePet('${pet.id}')">X</button>
+                    </div>
+                    <button class="btn" onclick="showPetDetails('${pet.id}')">Ver Detalhes</button>
+                `;
+                petListFull.appendChild(petCardFull);
+            });
+        }
+        
+        // Função para pré-visualizar o avatar
+        function previewAvatar(event) {
+            const preview = document.getElementById('avatar-preview');
+            preview.innerHTML = ''; // Limpa o preview anterior
+            const file = event.target.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    preview.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+                // Limpa o campo de emoji se uma imagem for selecionada
+                document.getElementById('newPetAvatarEmoji').value = '';
+            }
+        }
+
+        async function addPet() {
+            const name = document.getElementById('newPetName').value;
+            const species = document.getElementById('newPetSpecies').value;
+            const breed = document.getElementById('newPetBreed').value;
+            const avatarFile = document.getElementById('newPetAvatarFile').files[0];
+            const avatarEmoji = document.getElementById('newPetAvatarEmoji').value;
+            
+            let avatarData = '';
+
+            if (avatarFile) {
+                // Converte a imagem para Base64
+                avatarData = await new Promise(resolve => {
+                    const reader = new FileReader();
+                    reader.onload = e => resolve(e.target.result);
+                    reader.readAsDataURL(avatarFile);
+                });
+            } else if (avatarEmoji) {
+                avatarData = avatarEmoji;
+            } else {
+                avatarData = '🐾'; // Avatar padrão
+            }
+
+            if (name && species) {
+                const newPet = {
+                    id: `pet-${Date.now()}`,
+                    name,
+                    species,
+                    breed,
+                    avatar: avatarData,
+                };
+                state.pets.push(newPet);
+                saveState();
+                renderPets();
+                hidePetForm();
+                // Limpa os campos do formulário após adicionar
+                document.getElementById('newPetName').value = '';
+                document.getElementById('newPetSpecies').value = '';
+                document.getElementById('newPetBreed').value = '';
+                document.getElementById('newPetAvatarFile').value = '';
+                document.getElementById('newPetAvatarEmoji').value = '';
+                document.getElementById('avatar-preview').innerHTML = ''; // Limpa o preview
+                showNotification(`${name} foi adicionado(a) com sucesso!`, 'success');
+            } else {
+                showNotification('Nome e espécie são obrigatórios.', 'error');
+            }
+        }
+        
+        function removePet(petId) {
+            const petIndex = state.pets.findIndex(pet => pet.id === petId);
+            if (petIndex !== -1) {
+                const removedPet = state.pets.splice(petIndex, 1)[0];
+                saveState();
+                renderPets();
+                showNotification(`${removedPet.name} foi removido(a).`, 'info');
+            }
+        }
+
+        // Simulação de Lembrete de Vacina
+        function checkVaccineReminder() {
+            const vaccineReminderEl = document.getElementById('vaccine-reminder');
+            
+            // Simulação de um pet que precisa de vacina (se existirem Max ou Luna)
+            const maxPet = state.pets.find(pet => pet.name === 'Max');
+            const lunaPet = state.pets.find(pet => pet.name === 'Luna');
+
+            if (maxPet) {
+                vaccineReminderEl.textContent = `${maxPet.name} - Vacina antirrábica em 3 dias`;
+                showNotification(`Lembrete: Vacina de ${maxPet.name} em 3 dias!`, 'info');
+            } else if (lunaPet) {
+                 vaccineReminderEl.textContent = `${lunaPet.name} - Vermífugo em 1 semana`;
+                showNotification(`Lembrete: Vermífugo de ${lunaPet.name} em 1 semana!`, 'info');
+            } else {
+                 vaccineReminderEl.textContent = 'Nenhum lembrete de vacina no momento.';
+            }
+        }
+
+        // Funções de Navegação
+        function showScreen(screenName, element) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenName).classList.add('active');
+            
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            if (element) {
+                element.classList.add('active');
+            } else {
+                document.querySelector('.nav-item').classList.add('active');
+            }
+        }
+        
+        function showEmergency() {
+            document.getElementById('emergencyModal').classList.add('active');
+            setTimeout(() => {
+                hideEmergency();
+                showScreen('emergency', document.querySelector('[onclick="showScreen(\'emergency\', this)"]'));
+            }, 2000);
+        }
+
+        function hideEmergency() {
+            document.getElementById('emergencyModal').classList.remove('active');
+        }
+
+        function showPetForm() {
+            document.getElementById('petFormModal').classList.add('active');
+            // Limpa o preview e os campos do formulário ao abrir
+            document.getElementById('newPetName').value = '';
+            document.getElementById('newPetSpecies').value = '';
+            document.getElementById('newPetBreed').value = '';
+            document.getElementById('newPetAvatarFile').value = '';
+            document.getElementById('newPetAvatarEmoji').value = '';
+            document.getElementById('avatar-preview').innerHTML = '';
+        }
+
+        function hidePetForm() {
+            document.getElementById('petFormModal').classList.remove('active');
+        }
+
+        // Demais funções (como callVet, showArticle, etc.) permanecem as mesmas
+        function callVet(phone) {
+            alert(`Ligando para: ${phone}\n\nEm um aplicativo real, isso abriria o discador do telefone.`);
+        }
+
+        function showFirstAid(type) {
+            const guides = {
+                choking: "1. Mantenha a calma\n2. Abra a boca do animal\n3. Remova objetos visíveis\n4. Levante as patas traseiras\n5. Procure ajuda veterinária",
+                poisoning: "1. Remova o animal da fonte\n2. NÃO induza vômito\n3. Ligue para o veterinário\n4. Leve embalagem do produto\n5. Transporte imediatamente",
+                wounds: "1. Pressione com pano limpo\n2. Eleve o ferimento\n3. NÃO remova objetos grandes\n4. Mantenha o animal calmo\n5. Procure veterinário",
+                seizures: "1. Remova objetos perigosos\n2. NÃO segure a língua\n3. Cronometr o tempo\n4. Mantenha ambiente escuro\n5. Contate veterinário"
+            };
+            alert(`Primeiros Socorros - ${type.toUpperCase()}:\n\n${guides[type]}`);
+        }
+
+        function showPetDetails(petId) {
+            const pet = state.pets.find(p => p.id === petId);
+            if (pet) {
+                alert(`Detalhes do ${pet.name}:\n\nEspécie: ${pet.species}\nRaça: ${pet.breed}\n`);
+            }
+        }
+
+        function calculateFood() {
+            const weight = parseFloat(document.getElementById('petWeight').value);
+            const age = document.getElementById('petAge').value;
+            
+            if (!weight || weight <= 0) {
+                showNotification('Por favor, insira um peso válido.', 'error');
+                return;
+            }
+            
+            let multiplier;
+            switch (age) {
+                case 'puppy': multiplier = 3; break;
+                case 'adult': multiplier = 2; break;
+                case 'senior': multiplier = 1.8; break;
+                default: multiplier = 2;
+            }
+            
+            const dailyAmount = Math.round(weight * multiplier * 10) / 10;
+            const resultDiv = document.getElementById('foodResult');
+            resultDiv.innerHTML = `
+                <strong>Recomendação diária:</strong><br>
+                ${dailyAmount}g de ração<br>
+                <small>Divida em 2-3 refeições</small>
+            `;
+            resultDiv.style.display = 'block';
+        }
+
+        function likePost(button) {
+            const countSpan = button.querySelector('span:last-child');
+            let count = parseInt(countSpan.textContent);
+            count++;
+            countSpan.textContent = count;
+            button.style.color = '#f44336';
+        }
+        
+        function showArticle(type) {
+            const articles = {
+                nutrition: "Nutrição balanceada é fundamental para a saúde do seu pet. Inclua proteínas de qualidade, carboidratos, gorduras saudáveis, vitaminas e minerais na dieta. Consulte sempre um veterinário para orientações específicas.",
+                training: "O treinamento deve começar cedo. Use reforço positivo, seja consistente, pratique comandos básicos como 'senta', 'fica' e 'vem'. Paciência é fundamental para o sucesso.",
+                health: "Fique atento a mudanças no comportamento, apetite, energia e hábitos. Sinais como vômitos frequentes, diarreia, letargia ou dificuldade para respirar requerem atenção veterinária imediata."
+            };
+            alert(`Artigo: ${type.toUpperCase()}\n\n${articles[type]}\n\n📖 Em um app real, isso abriria o artigo completo.`);
+        }
+
+        // Inicializa o app
+        document.addEventListener('DOMContentLoaded', function() {
+            // Carrega o estado salvo
+            const savedLoggedIn = localStorage.getItem('isLoggedIn');
+            const savedUserEmail = localStorage.getItem('userEmail');
+            if (savedLoggedIn === 'true' && savedUserEmail) {
+                state.isLoggedIn = true;
+                state.userEmail = savedUserEmail;
+            }
+            
+            renderAuthStatus();
+            renderPets();
+            showScreen('home', document.querySelector('.nav-item.active'));
+            checkVaccineReminder();
+
+            // Simulação de notificação de boas-vindas
+            if (!state.isLoggedIn) {
+                 setTimeout(() => {
+                    showNotification('Bem-vindo(a) ao PetCare! 🐾', 'success');
+                }, 1000);
+            }
+        });
+    </script>
+</body>
+</html>
